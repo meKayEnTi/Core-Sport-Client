@@ -1,6 +1,6 @@
 import { Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, CircularProgress, Typography } from "@mui/material";
 import type { Product } from "../../types/Product";
-// import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 // import agent from "../../app/api/agent";
 // import { LoadingButton } from "@mui/lab";
@@ -24,13 +24,17 @@ export default function ProductCard({ product }: Props) {
     };
 
     // Function to format the price with INR currency symbol
-    const formatPrice = (price: number): string => {
-        return new Intl.NumberFormat('en-IN', {
+    const formatPrice = (price: number, locale = 'vi-VN', currency = 'VND'): string => {
+        if (isNaN(price)) return '₫0';
+
+        return new Intl.NumberFormat(locale, {
             style: 'currency',
-            currency: 'INR',
-            minimumFractionDigits: 2
+            currency,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
         }).format(price);
     };
+      
 
     // const [loading, setLoading] = useState(false);
     // const dispatch = useAppDispatch();
@@ -75,9 +79,6 @@ export default function ProductCard({ product }: Props) {
                 <Button size="small">
                     Add to cart
                 </Button>
-                <Button size="small">
-                    View
-                </Button>
                 {/* <LoadingButton
                     loading={loading}
                     // onClick={addItem}
@@ -85,8 +86,8 @@ export default function ProductCard({ product }: Props) {
                     startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
                 >
                     Add to cart
-                </LoadingButton>
-                <Button component={Link} to={`/store/${product.id}`} size="small">View</Button> */}
+                </LoadingButton> */}
+                <Button component={Link} to={`/store/${product.id}`} size="small">View</Button>
             </CardActions>
         </Card>
     );

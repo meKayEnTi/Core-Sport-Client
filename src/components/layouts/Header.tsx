@@ -69,7 +69,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                     <Switch checked={darkMode} onChange={handleThemeChange} />
                 </Box>
 
-                {/* <List sx={{ display: "flex" }}>
+                <List sx={{ display: "flex" }}>
                     {navLinks.map(({ title, path }) => (
                         <ListItem
                             component={NavLink}
@@ -82,6 +82,25 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                     ))}
                 </List>
                 <Box display="flex" alignItems="center">
+                    <IconButton size="large" edge ="start" color="inherit" sx={{ mr: 2 }}>
+                        <Badge badgeContent="4" color="secondary">
+                            <ShoppingCart />
+                        </Badge>
+                    </IconButton>
+                    <List sx={{ display: "flex" }}>
+                        {accountLinks.map(({ title, path }) => (
+                            <ListItem
+                                component={NavLink}
+                                to={path}
+                                key={path}
+                                sx={navStyles}
+                            >
+                                {title}
+                            </ListItem>
+                        ))}
+                    </List>
+                </Box>
+                {/* <Box display="flex" alignItems="center">
                     <IconButton
                         component={Link}
                         to="/basket"
