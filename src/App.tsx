@@ -2,6 +2,7 @@ import { Container, createTheme, CssBaseline, ThemeProvider } from '@mui/materia
 import Header from './components/layouts/Header'
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
@@ -19,6 +20,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
+      <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
       <Header darkMode={darkMode} handleThemeChange={handleThemeChange} />
       <Container sx={{ paddingTop: "1px" }}>
         <Outlet />

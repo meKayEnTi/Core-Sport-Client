@@ -2,20 +2,19 @@ import type { Product } from '../types/Product';
 import { useEffect, useState } from 'react';
 import { Fragment } from 'react';
 import ProductList from '../components/Product/ProductList';
+import ProductService from '../services/ProductService';
+import Spinner from '../components/layouts/Spinner';
 
 export default function Catalog() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/v1/products?page=0&size=10&sort=name&order=desc');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
+        const response = await ProductService.Product.list();
         setProducts(
-          data.content.map((product: any) => ({
+          response.content.map((product: any) => ({
             id: product.id,
             name: product.name,
             description: product.description,
@@ -27,10 +26,14 @@ export default function Catalog() {
         );
       } catch (error) {
         console.error('Failed to fetch products:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProducts();
   }, []);
+  if (loading) return <Spinner message="Loading products..." />;
+  if (!products || products.length === 0) return <h3>Unable to load products</h3>;
   return (
     <Fragment>
       <ProductList products={products} />

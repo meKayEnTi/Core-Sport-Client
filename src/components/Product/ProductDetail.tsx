@@ -1,9 +1,11 @@
-import { getProductById } from "../../services/ProductService";
+import ProductService from "../../services/ProductService";
 import type { Product } from "../../types/Product";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Box, Container, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
+import NotFoundPage from "../../pages/NotFoundPage";
+import Spinner from "../layouts/Spinner";
 
 export default function ProductDetail() {
     const {productId} = useParams<{ productId: string }>();
@@ -20,9 +22,15 @@ export default function ProductDetail() {
         return null;
     };
     useEffect(() => {
+        if (!productId || isNaN(id) || id <= 0) {
+            console.warn("Invalid product ID in URL");
+            setProduct(null);
+            setLoading(false);
+            return;
+        }
         const fetchProduct = async () => {
             try {
-                let response = await getProductById(id);
+                let response = await ProductService.Product.detail(id);
                 setProduct(response);
                 console.log("Fetched Product:", product);
             } catch (error) {
@@ -33,9 +41,9 @@ export default function ProductDetail() {
         };
 
         fetchProduct();
-    }, [id]);
-    if(loading) return <h3>Loading...</h3>;
-    if(!product) return <h3>Product not found</h3>;
+    }, [id, productId]);
+    if(loading) return <Spinner message="Loading product details..." />;
+    if(!product) return <NotFoundPage />;
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
@@ -47,7 +55,10 @@ export default function ProductDetail() {
                             <img
                                 src={"/images/products/" + extractImageName(product)}
                                 alt={product.name}
-                                style={{ width: '100%', borderRadius: 8 }}
+                                style={{
+                                    height: 300,
+                                    objectFit: 'cover', 
+                                    borderRadius: 8 }}
                             />
                         ) : (
                             <Box
