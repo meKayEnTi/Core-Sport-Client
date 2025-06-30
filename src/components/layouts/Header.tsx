@@ -3,7 +3,7 @@
 import { AppBar, Badge, Box, IconButton, List, ListItem, Switch, Toolbar, Typography } from "@mui/material";
 import { Link, NavLink } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
-// import { useAppSelector } from "../store/configureStore";
+import { useAppSelector } from "../../apps/store";
 import { useEffect } from "react";
 // import SignedInMenu from "./SignedInMenu";
 
@@ -36,17 +36,17 @@ interface Props {
 }
 
 export default function Header({ darkMode, handleThemeChange }: Props) {
-    // const { basket } = useAppSelector(state => state.basket);
+    const { cart } = useAppSelector(state => state.cart);
     // const { user } = useAppSelector(state => state.account);
     // console.log('Basket:', basket);
-    // useEffect(() => {
-    //     console.log('Basket Items:', basket?.items);
-    // }, [basket]);
+    useEffect(() => {
+        console.log('Basket Items:', cart?.items);
+    }, [cart]);
 
-    // const temp = basket;
-    // console.log(temp?.items);
-    // console.log('Basket Items:', basket?.items);
-    // const itemCount = basket?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+    const temp = cart;
+    console.log(temp?.items);
+    console.log('Basket Items:', cart?.items);
+    const itemCount = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
     return (
         <AppBar position="sticky" sx={{ width:'100vw', mb: 4, top: 0, zIndex: 9999 }}>
@@ -82,8 +82,14 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                     ))}
                 </List>
                 <Box display="flex" alignItems="center">
-                    <IconButton size="large" edge ="start" color="inherit" sx={{ mr: 2 }}>
-                        <Badge badgeContent="4" color="secondary">
+                    <IconButton 
+                        component = {Link}
+                        to="/cart"
+                        size="large" 
+                        edge ="start" 
+                        color="inherit" 
+                        sx={{ mr: 2 }}>
+                        <Badge badgeContent={itemCount} color="secondary">
                             <ShoppingCart />
                         </Badge>
                     </IconButton>
@@ -100,20 +106,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                         ))}
                     </List>
                 </Box>
-                {/* <Box display="flex" alignItems="center">
-                    <IconButton
-                        component={Link}
-                        to="/basket"
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        sx={{ mr: 2 }}
-                    >
-                        <Badge badgeContent={itemCount} color="secondary">
-                            <ShoppingCart />
-                        </Badge>
-                    </IconButton>
-                    {user ? (
+                    {/* {user ? (
                         <SignedInMenu />
                     ) : (
                         <List sx={{ display: "flex" }}>
@@ -128,8 +121,7 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                                 </ListItem>
                             ))}
                         </List>
-                    )}
-                </Box> */}
+                    )} */}
             </Toolbar>
         </AppBar>
     );

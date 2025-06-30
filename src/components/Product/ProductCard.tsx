@@ -2,10 +2,10 @@ import { Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, 
 import type { Product } from "../../types/Product";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-// import agent from "../../app/api/agent";
-// import { LoadingButton } from "@mui/lab";
-// import { useAppDispatch } from "../../app/store/configureStore";
-// import { setBasket } from "../basket/basketSlice";
+import { setCart } from "../../slices/cartSlices";
+import agent from "../../services/agent";
+import { LoadingButton } from "@mui/lab";
+import { useAppDispatch } from "../../apps/store";
 
 interface Props {
     product: Product;
@@ -36,19 +36,19 @@ export default function ProductCard({ product }: Props) {
     };
       
 
-    // const [loading, setLoading] = useState(false);
-    // const dispatch = useAppDispatch();
+    const [loading, setLoading] = useState(false);
+    const dispatch = useAppDispatch();
 
-    // function addItem() {
-    //     setLoading(true);
-    //     agent.Basket.addItem(product, dispatch)
-    //         .then(response => {
-    //             console.log('New Basket:', response.basket);
-    //             dispatch(setBasket(response.basket));
-    //         })
-    //         .catch(error => console.log(error))
-    //         .finally(() => setLoading(false));
-    // }
+    function addItem() {
+        setLoading(true);
+        agent.Cart.addItem(product, dispatch)
+            .then(response => {
+                console.log('New Basket:', response.cart);
+                dispatch(setCart(response.cart));
+            })
+            .catch(error => console.log(error))
+            .finally(() => setLoading(false));
+    }
 
 
     return (
@@ -76,17 +76,14 @@ export default function ProductCard({ product }: Props) {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small">
-                    Add to cart
-                </Button>
-                {/* <LoadingButton
+                <LoadingButton
                     loading={loading}
-                    // onClick={addItem}
+                    onClick={addItem}
                     size="small"
                     startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
                 >
                     Add to cart
-                </LoadingButton> */}
+                </LoadingButton>
                 <Button component={Link} to={`/store/${product.id}`} size="small">View</Button>
             </CardActions>
         </Card>
