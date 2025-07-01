@@ -2,11 +2,11 @@ import type { Cart } from "../types/Cart";
 import { createSlice } from '@reduxjs/toolkit';
 
 interface CartState {
-    cart : Cart | null;
+    cart: Cart | null;
 }
 
 const inititalState: CartState = {
-    cart : null
+    cart: null
 }
 
 export const cartSlice = createSlice({

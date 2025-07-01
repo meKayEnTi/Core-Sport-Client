@@ -3,8 +3,8 @@ import type { Product } from "../types/Product";
 import type { Cart, CartItem, CartTotals } from "../types/Cart";
 import { createId } from "@paralleldrive/cuid2";
 
-import { setCart } from "../slices/cartSlices";
-import type{ Dispatch } from "redux";
+import { setCart } from "../slices/cartSlice";
+import type { Dispatch } from "redux";
 
 class CartService {
     apiUrl = "http://localhost:8080/api/v1/carts";
@@ -40,6 +40,7 @@ class CartService {
             }
 
             const itemToAdd = this.mapProductToCart(item);
+            itemToAdd.quantity = quantity;
             cart.items = this.upsertItems(cart.items, itemToAdd, quantity);
             this.setCart(cart, dispatch);
 

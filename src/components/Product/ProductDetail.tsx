@@ -6,12 +6,22 @@ import { Box, Container, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import NotFoundPage from "../../pages/NotFoundPage";
 import Spinner from "../layouts/Spinner";
+import TextField from "@mui/material/TextField";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { useAppDispatch, useAppSelector } from "../../apps/store";
+import agent from "../../services/agent";
 
 export default function ProductDetail() {
+    const {cart} = useAppSelector(state => state.cart);
+    const dispatch = useAppDispatch();
     const { productId } = useParams<{ productId: string }>();
     const id = productId ? parseInt(productId) : 0;
     const [product, setProduct] = useState<Product | null>();
     const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [quantity, setQuantity] = useState(0);
+    const item = cart?.items.find(i => i.id === product?.id);
+
     const extractImageName = (item: Product): string | null => {
         if (item && item.pictureUrl) {
             const parts = item.pictureUrl.split('/');
@@ -42,6 +52,42 @@ export default function ProductDetail() {
 
         fetchProduct();
     }, [id, productId]);
+
+    const inputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(event.target.value);
+        if (!isNaN(value) && value > 0) {
+            setQuantity(value);
+        }
+    };
+
+    const updateQuantity = async () => {
+        try {
+            setSubmitting(true);
+            const newItem = {
+                ...product!,
+                quantity: quantity
+            };
+            if (item) {
+                const quantityDifference = quantity - item.quantity;
+                if (quantityDifference > 0) {
+                    // Increment the quantity of an existing item in the basket
+                    await agent.Cart.incrementItemQuantity(item.id, quantityDifference, dispatch);
+                } else if (quantityDifference < 0) {
+                    // Decrement the quantity of an existing item in the basket
+                    await agent.Cart.decrementItemQuantity(item.id, Math.abs(quantityDifference), dispatch);
+                }
+            } else {
+                // Add a new item to the basket
+                await agent.Cart.addItem(newItem, quantity, dispatch);
+            }
+            setSubmitting(false);
+        } catch (error) {
+            console.error("Failed to update quantity:", error);
+            // Handle error
+            setSubmitting(false);
+        }
+    };
+
     if (loading) return <Spinner message="Loading product details..." />;
     if (!product) return <NotFoundPage />;
 
@@ -94,13 +140,39 @@ export default function ProductDetail() {
 
                         {product.description && (
                             <>
-                                <Typography variant="subtitle1" fontWeight="bold" mt={3}>
+                                <Typography variant="subtitle1" fontWeight="bold" mt={3} >
                                     Mô tả
                                 </Typography>
-                                <Typography variant="body1">{product.description}</Typography>
+                                <Typography variant="body1" mb={5}>{product.description}</Typography>
                             </>
                         )}
+                        <Grid container spacing={2}>
+                            <Grid size={6}>
+                                <TextField
+                                    onChange={inputChange}
+                                    variant='outlined'
+                                    type='number'
+                                    label='Quantity in Cart'
+                                    fullWidth
+                                    value={quantity}
+                                />
+                            </Grid>
+                            <Grid size={6}>
+                                <LoadingButton
+                                    sx={{ height: '55px' }}
+                                    color='primary'
+                                    size='large'
+                                    variant='contained'
+                                    fullWidth
+                                    loading={submitting}
+                                    onClick={updateQuantity}
+                                >
+                                    {item ? 'Update Quantity' : 'Add to Cart'}
+                                </LoadingButton>
+                            </Grid>
+                        </Grid>
                     </Grid>
+
                 </Grid>
             </Paper>
         </Container>

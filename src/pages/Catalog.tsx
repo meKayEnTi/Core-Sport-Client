@@ -41,8 +41,10 @@ export default function Catalog() {
   const pageSize = 10; // Number of items per page
 
   useEffect(() => {
+    const page = currentPage - 1; // ✅ tính đúng index cho backend
+    const size = pageSize;
     Promise.all([
-      agent.Product.list(currentPage, pageSize),
+      agent.Product.list(page, size),
       agent.Brand.list(),
       agent.Type.list()
     ])
@@ -94,6 +96,7 @@ export default function Catalog() {
 
   const handleSortChange = (_: React.ChangeEvent<HTMLInputElement>, value: string) => {
     setSelectedSort(value); // Update selectedSort state with the new sorting option
+    setCurrentPage(1);
   };
 
 
@@ -105,6 +108,7 @@ export default function Catalog() {
 
     setSelectedBrand(value);
     setSelectedBrandId(brand?.id ?? 0);
+    setCurrentPage(1);
   };
   
 
@@ -112,6 +116,7 @@ export default function Catalog() {
     setSelectedType(value);
     const type = types.find((t) => t.name === value);
     setSelectedTypeId(type ? type.id : 0);
+    setCurrentPage(1);
   };
   
   const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {

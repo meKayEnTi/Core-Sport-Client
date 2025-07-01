@@ -2,7 +2,7 @@ import { Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, 
 import type { Product } from "../../types/Product";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { setCart } from "../../slices/cartSlices";
+import { setCart } from "../../slices/cartSlice";
 import agent from "../../services/agent";
 import { LoadingButton } from "@mui/lab";
 import { useAppDispatch } from "../../apps/store";
@@ -34,14 +34,14 @@ export default function ProductCard({ product }: Props) {
             maximumFractionDigits: 0,
         }).format(price);
     };
-      
+
 
     const [loading, setLoading] = useState(false);
     const dispatch = useAppDispatch();
 
     function addItem() {
         setLoading(true);
-        agent.Cart.addItem(product, dispatch)
+        agent.Cart.addItem(product, 1, dispatch)
             .then(response => {
                 console.log('New Basket:', response.cart);
                 dispatch(setCart(response.cart));
@@ -59,7 +59,7 @@ export default function ProductCard({ product }: Props) {
                         {product.name.charAt(0).toUpperCase()}
                     </Avatar>
                 }
-                title={product.name}
+                title={ product.name.length > 20 ? product.name.slice(0, 20) + '...' : product.name }
                 titleTypographyProps={{ sx: { fontWeight: 'bold', color: 'primary.main' } }}
             />
             <CardMedia

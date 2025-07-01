@@ -13,6 +13,17 @@ axios.defaults.baseURL = 'http://localhost:8080/api/v1';
 const idle = () => new Promise(resolve => setTimeout(resolve, 1000));
 const responseBody = (response: AxiosResponse) => response.data;
 
+axios.interceptors.request.use(config => {
+    const user = localStorage.getItem('user');
+    if(user){
+        const token = JSON.parse(user).token;
+        if (token && config.headers) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+    }
+    return config;
+});
+  
 axios.interceptors.response.use(
     async response => {
         await idle();
@@ -73,9 +84,9 @@ const Cart = {
             throw error;
         }
     },
-    addItem: async (product: Product, dispatch: Dispatch) => {
+    addItem: async (product: Product, quantity: number, dispatch: Dispatch) => {
         try {
-            const result = await CartService.addItemToCart(product, 1, dispatch);
+            const result = await CartService.addItemToCart(product, quantity, dispatch);
             console.log(result);
             return result;
         } catch (error) {
@@ -125,8 +136,18 @@ const Cart = {
       }
 };
 
+const Account = {
+    login: (values : any) => requests.post('auth/login', values)
+} 
+
+const Orders = {
+    list: () => requests.get('orders'),
+    fetch: (id: number) => requests.get(`orders/${id}`),
+    create: (values: any) => requests.post('orders', values)
+  }
+
 const agent = {
-    Product, Cart, Type, Brand
+    Product, Cart, Type, Brand, Account, Orders
 }
 
 export default agent;

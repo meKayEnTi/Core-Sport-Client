@@ -5,7 +5,7 @@ import { Link, NavLink } from "react-router-dom";
 import { ShoppingCart } from "@mui/icons-material";
 import { useAppSelector } from "../../apps/store";
 import { useEffect } from "react";
-// import SignedInMenu from "./SignedInMenu";
+import SignedInMenu from "./SignInMenu";
 
 const navLinks = [
     { title: "Home", path: "/" },
@@ -37,7 +37,7 @@ interface Props {
 
 export default function Header({ darkMode, handleThemeChange }: Props) {
     const { cart } = useAppSelector(state => state.cart);
-    // const { user } = useAppSelector(state => state.account);
+    const { user } = useAppSelector(state => state.account);
     // console.log('Basket:', basket);
     useEffect(() => {
         console.log('Basket Items:', cart?.items);
@@ -46,7 +46,8 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
     const temp = cart;
     console.log(temp?.items);
     console.log('Basket Items:', cart?.items);
-    const itemCount = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+    const itemCount = cart?.items?.length || 0;
+
 
     return (
         <AppBar position="sticky" sx={{ width:'100vw', mb: 4, top: 0, zIndex: 9999 }}>
@@ -82,31 +83,19 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                     ))}
                 </List>
                 <Box display="flex" alignItems="center">
-                    <IconButton 
-                        component = {Link}
+                    <IconButton
+                        component={Link}
                         to="/cart"
-                        size="large" 
-                        edge ="start" 
-                        color="inherit" 
-                        sx={{ mr: 2 }}>
+                        size="large"
+                        edge="start"
+                        color="inherit"
+                        sx={{ mr: 2 }}
+                    >
                         <Badge badgeContent={itemCount} color="secondary">
                             <ShoppingCart />
                         </Badge>
                     </IconButton>
-                    <List sx={{ display: "flex" }}>
-                        {accountLinks.map(({ title, path }) => (
-                            <ListItem
-                                component={NavLink}
-                                to={path}
-                                key={path}
-                                sx={navStyles}
-                            >
-                                {title}
-                            </ListItem>
-                        ))}
-                    </List>
-                </Box>
-                    {/* {user ? (
+                    {user ? (
                         <SignedInMenu />
                     ) : (
                         <List sx={{ display: "flex" }}>
@@ -121,7 +110,8 @@ export default function Header({ darkMode, handleThemeChange }: Props) {
                                 </ListItem>
                             ))}
                         </List>
-                    )} */}
+                    )}
+                </Box>
             </Toolbar>
         </AppBar>
     );
